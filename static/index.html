@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        background-color: linen;
+      }
+
+      h1 {
+        color: maroon;
+      }
+
+      button {
+        border: maroon;
+        color: #750e0e;
+        background: #ffc8c8;
+        text-align: center;
+        font-size: larger;
+        border-radius: 8px;
+        border-width: 2px;
+        width: fit-content;
+        padding: 10px;
+        cursor: pointer;
+        margin-block: 30px;
+      }
+
+      .container {
+        padding: 1rem;
+      }
+
+      .link {
+        border-radius: 8px;
+        padding: 5px;
+        margin: 10px;
+        border: maroon;
+        color: #0c0101;
+        background: #f5d2d2;
+        font-size: large;
+      }
+
+      .link-container{
+        display: flex;
+        flex-wrap: wrap;
+      }
+    </style>
+    <script>
+      var links = [];
+
+      const loadLinks = () => {
+
+        links.forEach(link=>link.remove());
+        links = []
+
+        fetch("/get-urls")
+          .then((res) => res.json())
+          .then((data) => {
+            data.urls.filter(el=>!el.startsWith("#") && !el == "").forEach((element) => {
+              const button = document.createElement("a");
+              button.className = "link";
+              button.innerHTML = element;
+              button.href = "/" + element;
+
+              links.push(button);
+
+              document.getElementsByClassName("link-container")[0].appendChild(button);
+            });
+          })
+          .catch((err) => console.error(err));
+      };
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const button = document.getElementById("b");
+
+        button.addEventListener("click", () => {
+          const newNode = document.createElement("p");
+          newNode.className = "response";
+          newNode.innerHTML = "Processing...";
+
+          document.body.appendChild(newNode);
+          fetch("/generate-critical-css")
+            .then((res) => res.json())
+            .then((data) => {
+              const newNode = document.createElement("p");
+              newNode.className = "response";
+              newNode.innerHTML = data.message;
+
+              document.body.appendChild(newNode);
+
+              if (data.ok){
+                loadLinks();
+              }
+            })
+            .catch((err) => console.error(err));
+        });
+      });
+
+      loadLinks();
+    </script>
+  </head>
+
+  <div class="container">
+    <h1>Let's extract the critical CSS!</h1>
+    <button id="b">Click me here!</button>
+  </div>
+
+  <div class="link-container">
+
+  </div>
+</html>
