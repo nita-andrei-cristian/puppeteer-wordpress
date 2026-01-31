@@ -1,115 +1,82 @@
 # ⚡ Critical CSS Generator with Puppeteer
 
-A Node.js tool for automated critical CSS extraction and static HTML generation, designed to significantly improve Largest Contentful Paint (LCP) and initial page load performance.
+A Node.js–based tool for automated critical CSS extraction and static HTML generation, built to significantly improve page load performance and Core Web Vitals, especially Largest Contentful Paint (LCP).
 
-This project uses Puppeteer CSS coverage to detect and inline only the CSS required for above-the-fold rendering, while deferring non-critical resources.
+This project uses real browser analysis via Puppeteer to inline only the CSS actually required for above-the-fold rendering.
 
-🚀 Results
+# 🚀 Performance Results
 
-Using this approach, page performance improved as follows:
+Measured improvements after applying critical CSS inlining:
 
-LCP reduced from ~0.8s → ~0.3s → ~0.18s
+## LCP reduced: ~0.8s → ~0.3s → ~0.18s
 
-Faster first paint and improved perceived performance
+Faster first paint
 
 Reduced render-blocking CSS
 
-🧠 How it works
+Improved perceived loading speed
 
-Launches a headless browser using Puppeteer
+# 🧠 Optimization Strategy
 
-Crawls internal links starting from a base URL
+1. The optimization follows one core idea:
+2. Only load what the browser actually needs to render the first view.
+3. Instead of manually defining critical CSS, this tool:
+- pens pages in a real browser
+- measures which CSS rules are actually used
+- inlines only those rules
+- defers non-critical resources
 
+# ⚙️ How It Works
+
+Launches a headless Chromium instance using Puppeteer
+Crawls all internal links starting from a base URL
 For each page:
+- Starts CSS coverage tracking
+- Loads the page until the network is idle
+- Extracts only the used CSS ranges
+- Builds a critical CSS block
+- Injects critical CSS directly into the head
+- Defers JavaScript execution
+- Generates static HTML files for each route
+- Serves optimized pages via an Express server
 
-Collects CSS coverage
-
-Extracts only the used CSS ranges
-
-Inlines critical CSS directly into <head>
-
-Defers JavaScript execution
-
-Generates static HTML files for each route
-
-Serves the optimized pages via an Express server
-
-🛠️ Tech Stack
+# 🛠️ Tech Stack
 
 Node.js
-
 Express
-
 Puppeteer
+Chrome CSS Coverage API
+File-system based static generation
 
-CSS Coverage API
+# 📂 Output Structure
 
-File system–based static generation
-
-📂 Output
-
-Generated files are stored as static HTML pages:
-
+Generated static HTML files are stored in:
 /static/wordpress/
-  ├── home.html
-  ├── about.html
-  └── ...
+home.html
+about.html
+…
 
-
-Each page contains:
+Each page includes:
 
 Inlined critical CSS
-
 Deferred JavaScript
-
 Rewritten internal links for local serving
 
-📡 API Endpoints
-Generate Critical CSS
-GET /generate-critical-css
+# 🎯 Use Cases
 
-
-Triggers the crawling and generation process.
-
-Get processed URLs
-GET /get-urls
-
-
-Returns a list of generated pages.
-
-Serve generated pages
-GET /:page
-
-
-Serves the optimized static HTML output.
-
-▶️ Usage
-npm install
-node index.js
-
-
-Then visit:
-
-http://localhost:3000/generate-critical-css
-
-🎯 Use cases
-
-Performance optimization pipelines
-
-Static generation for WordPress or CMS sites
-
-Lighthouse / Core Web Vitals improvements
-
+Core Web Vitals optimization
+Performance tooling for CMS / WordPress sites
+Static HTML generation pipelines
+Lighthouse score improvements
 Automated CSS analysis
 
-⚠️ Notes
+# ⚠️ Notes
 
-Designed for controlled environments and internal optimization workflows
-
-Base URL and routing can be adapted for different projects
-
+Designed for controlled environments
+Base URL and routing can be adapted
 Intended as a tooling prototype, not a full production framework
+Demonstrates browser-level optimization instead of heuristic CSS guessing
 
-📈 Key Takeaway
+# 📌 Key Takeaway
 
-This project demonstrates how browser-level analysis and automation can be used to extract real critical CSS and dramatically improve page load metrics without manual tuning.
+This project demonstrates how real browser instrumentation can be used to extract true critical CSS and achieve substantial LCP improvements without manual tuning.
